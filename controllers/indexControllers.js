@@ -14,7 +14,16 @@ exports.getAppointments = async (req, res) => {
     where: { patientId: patient.id },
     include: [Doctor, Patient]
   });
-  res.json(appointments);
+  // Formatear igual que en la creación: incluir doctor como objeto anidado
+  const formatted = appointments.map(a => {
+    const obj = a.toJSON();
+    return {
+      ...obj,
+      doctor: obj.Doctor,
+      patient: obj.Patient
+    };
+  });
+  res.json(formatted);
 };
 
 // GET /api/patients?doctor_email=...
@@ -35,37 +44,45 @@ exports.getPatients = async (req, res) => {
 
 // POST /api/appointments
 exports.createInstantAppointment = async (req, res) => {
-  const { doctor_email, patient_email, scheduled_at } = req.body;
+  const { doctor_email, patient_email, scheduled_at, duration } = req.body;
   if (!doctor_email || !patient_email) {
     return res.status(400).json({ error: 'doctor_email and patient_email are required' });
   }
   const doctor = await Doctor.findOrCreate({ where: { email: doctor_email }, defaults: { name: doctor_email } });
   const patient = await Patient.findOrCreate({ where: { email: patient_email }, defaults: { name: patient_email } });
-  const jitsi_url = `https://meet.jit.si/doctoramigo-${Math.floor(Math.random()*100000)}`;
+  const jitsi_url = `https://meet.gahandi.dev/${Math.floor(Math.random()*100000)}`;
   const appointment = await Appointment.create({
     scheduled_at,
     status: "instant",
     jitsi_url,
     doctorId: doctor[0].id,
-    patientId: patient[0].id
+    patientId: patient[0].id,
+    duration: duration || 30
   });
-  res.json(appointment);
+  // Obtener datos completos del doctor
+  const doctorData = doctor[0].toJSON();
+  res.json({ ...appointment.toJSON(), doctor: doctorData });
 };
 
 // POST /api/schedule
 exports.createScheduledAppointment = async (req, res) => {
-  const { doctor_email, patient_email, scheduled_at, notes } = req.body;
+  const { doctor_email, patient_email, scheduled_at, notes, duration } = req.body;
   if (!doctor_email || !patient_email) {
     return res.status(400).json({ error: 'doctor_email and patient_email are required' });
   }
   const doctor = await Doctor.findOrCreate({ where: { email: doctor_email }, defaults: { name: doctor_email } });
   const patient = await Patient.findOrCreate({ where: { email: patient_email }, defaults: { name: patient_email } });
+  const jitsi_url = `https://meet.gahandi.dev/${Math.floor(Math.random()*100000)}`;
   const appointment = await Appointment.create({
     scheduled_at,
     status: "scheduled",
     notes,
     doctorId: doctor[0].id,
-    patientId: patient[0].id
+    patientId: patient[0].id,
+    duration: duration || 30,
+    jitsi_url
   });
-  res.json(appointment);
+  // Obtener datos completos del doctor
+  const doctorData = doctor[0].toJSON();
+  res.json({ ...appointment.toJSON(), doctor: doctorData });
 };
