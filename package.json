@@ -4,7 +4,7 @@
   "description": "Proyecto web de cursos en linea",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,6 @@
     "express-list-endpoints": "^7.1.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.14.2",
-    "nodemon": "^3.1.0",
     "sequelize": "^6.37.7"
   }
 }
