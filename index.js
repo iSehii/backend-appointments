@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 require('./models/DoctorModel');
 require('./models/PacienteModel');
 require('./models/Appointment');
@@ -14,8 +13,7 @@ require('dotenv').config();
 const expressListEndpoints = require('express-list-endpoints');
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
 app.use(morgan('dev'));
 app.use('/', require('./routes/index'));
 console.log(expressListEndpoints(app));

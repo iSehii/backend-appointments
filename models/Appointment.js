@@ -8,7 +8,10 @@ const Appointment = sequelize.define('Appointment', {
   scheduled_at: { type: DataTypes.DATE, allowNull: false },
   status: { type: DataTypes.STRING, allowNull: false },
   jitsi_url: { type: DataTypes.STRING },
-  notes: { type: DataTypes.STRING },
+  notes: {
+    type: DataTypes.JSON,
+    allowNull: true
+  },
   duration: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 30 }
 });
 

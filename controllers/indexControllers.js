@@ -12,7 +12,7 @@ exports.getAppointments = async (req, res) => {
   if (!patient) return res.json([]);
   const appointments = await Appointment.findAll({
     where: { patientId: patient.id },
-    include: [Doctor, Patient]
+    include: [Doctor, Patient], order: [['scheduled_at', 'DESC']]
   });
   // Formatear igual que en la creación: incluir doctor como objeto anidado
   const formatted = appointments.map(a => {
@@ -25,6 +25,30 @@ exports.getAppointments = async (req, res) => {
   });
   res.json(formatted);
 };
+
+exports.createNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { note } = req.body;
+
+    if (!note) {
+      return res.status(400).json({ error: 'Note is required' });
+    }
+
+    const appointment = await Appointment.findByPk(id);
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    await appointment.update({ notes: note });
+
+    res.json(appointment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 // GET /api/patients?doctor_email=...
 exports.getPatients = async (req, res) => {
