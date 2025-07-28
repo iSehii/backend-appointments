@@ -12,7 +12,7 @@ const {
 } = require('../controllers/indexControllers');
 
 router.get('/api/appointments', getAppointments);
-router.get('/api/appointments/:id', deleteAppointment);
+router.delete('/api/appointments/:id', deleteAppointment);
 router.get('/api/patients', getPatients);
 router.post('/api/note/:id', createNote);
 router.post('/api/appointments', createInstantAppointment);
