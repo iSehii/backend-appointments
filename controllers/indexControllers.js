@@ -118,3 +118,11 @@ exports.createScheduledAppointment = async (req, res) => {
   const doctorData = doctor[0].toJSON();
   res.json({ ...appointment.toJSON(), doctor: doctorData });
 };
+
+exports.deleteAppointment = async (req, res) => {
+  const { id } = req.params;
+  const appointment = await Appointment.findByPk(id);
+  if (!appointment) return res.status(404).json({ error: 'Appointment not found' });
+  await appointment.destroy();
+  res.json({ message: 'Appointment deleted' });
+};
