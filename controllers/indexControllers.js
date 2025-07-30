@@ -83,7 +83,8 @@ exports.getPatients = async (req, res) => {
   if (!doctor) return res.json([]);
   const appointments = await Appointment.findAll({
     where: { doctorId: doctor.id },
-    include: [Patient, Doctor]
+    include: [Patient, Doctor],
+    order: [['scheduled_at', 'DESC']]
   });
   // Formatear igual que en getAppointments: incluir patient y doctor como objetos anidados
   const formatted = appointments.map(a => {
