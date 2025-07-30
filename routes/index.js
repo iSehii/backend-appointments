@@ -8,13 +8,15 @@ const {
   createInstantAppointment,
   createScheduledAppointment,
   createNote,
-  deleteAppointment
+  deleteAppointment,
+  createReceta
 } = require('../controllers/indexControllers');
 
 router.get('/api/appointments', getAppointments);
 router.delete('/api/appointments/:id', deleteAppointment);
 router.get('/api/patients', getPatients);
 router.post('/api/note/:id', createNote);
+router.post('/api/receta/:id', createReceta);
 router.post('/api/appointments', createInstantAppointment);
 router.post('/api/schedule', createScheduledAppointment);
 

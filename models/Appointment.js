@@ -12,6 +12,10 @@ const Appointment = sequelize.define('Appointment', {
     type: DataTypes.JSON,
     allowNull: true
   },
+  recetas: {
+    type: DataTypes.JSON,
+    allowNull: true
+  },
   duration: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 30 }
 });
 

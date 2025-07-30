@@ -50,6 +50,29 @@ exports.createNote = async (req, res) => {
 };
 
 
+exports.createReceta = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { receta } = req.body;
+
+    if (!receta) {
+      return res.status(400).json({ error: 'Receta is required' });
+    }
+
+    const appointment = await Appointment.findByPk(id);
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    await appointment.update({ recetas: receta });
+
+    res.json(appointment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 // GET /api/patients?doctor_email=...
 exports.getPatients = async (req, res) => {
   const { doctor_email } = req.query;
