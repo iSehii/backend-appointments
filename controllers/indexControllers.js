@@ -14,10 +14,13 @@ exports.getAppointments = async (req, res) => {
   const appointments = await Appointment.findAll({
     where: { patientId: patient.id },
     include: [Doctor, Patient], 
-    order: [
-      [sequelize.literal('DATE(scheduled_at)'), 'DESC'],
-      [sequelize.literal('TIME(scheduled_at)'), 'ASC']
-    ]
+    order: [['scheduled_at', 'DESC']]
+  });
+  
+  // Debug: mostrar las fechas para verificar el orden
+  console.log('Appointments ordenadas:');
+  appointments.forEach(app => {
+    console.log(`ID: ${app.id}, Fecha: ${app.scheduled_at}, Status: ${app.status}`);
   });
   // Formatear igual que en la creación: incluir doctor como objeto anidado
   const formatted = appointments.map(a => {
@@ -89,10 +92,7 @@ exports.getPatients = async (req, res) => {
   const appointments = await Appointment.findAll({
     where: { doctorId: doctor.id },
     include: [Patient, Doctor],
-    order: [
-      [sequelize.literal('DATE(scheduled_at)'), 'DESC'],
-      [sequelize.literal('TIME(scheduled_at)'), 'ASC']
-    ]
+    order: [['scheduled_at', 'DESC']]
   });
   // Formatear igual que en getAppointments: incluir patient y doctor como objetos anidados
   const formatted = appointments.map(a => {
@@ -169,10 +169,7 @@ exports.getAppointmentsByPatient = async (req, res) => {
   const appointments = await Appointment.findAll({ 
     where: { patientId: patient.id }, 
     include: [Doctor, Patient], 
-    order: [
-      [sequelize.literal('DATE(scheduled_at)'), 'DESC'],
-      [sequelize.literal('TIME(scheduled_at)'), 'ASC']
-    ]
+    order: [['scheduled_at', 'DESC']]
   });
   const formatted = appointments.map(a => {
     const obj = a.toJSON();
