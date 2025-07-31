@@ -15,8 +15,8 @@ exports.getAppointments = async (req, res) => {
     where: { patientId: patient.id },
     include: [Doctor, Patient], 
     order: [
-      [sequelize.fn('DATE', sequelize.col('scheduled_at')), 'DESC'],
-      [sequelize.fn('TIME', sequelize.col('scheduled_at')), 'ASC']
+      [sequelize.literal('DATE(scheduled_at)'), 'DESC'],
+      [sequelize.literal('TIME(scheduled_at)'), 'ASC']
     ]
   });
   // Formatear igual que en la creación: incluir doctor como objeto anidado
@@ -90,8 +90,8 @@ exports.getPatients = async (req, res) => {
     where: { doctorId: doctor.id },
     include: [Patient, Doctor],
     order: [
-      [sequelize.fn('DATE', sequelize.col('scheduled_at')), 'DESC'],
-      [sequelize.fn('TIME', sequelize.col('scheduled_at')), 'ASC']
+      [sequelize.literal('DATE(scheduled_at)'), 'DESC'],
+      [sequelize.literal('TIME(scheduled_at)'), 'ASC']
     ]
   });
   // Formatear igual que en getAppointments: incluir patient y doctor como objetos anidados
@@ -170,8 +170,8 @@ exports.getAppointmentsByPatient = async (req, res) => {
     where: { patientId: patient.id }, 
     include: [Doctor, Patient], 
     order: [
-      [sequelize.fn('DATE', sequelize.col('scheduled_at')), 'DESC'],
-      [sequelize.fn('TIME', sequelize.col('scheduled_at')), 'ASC']
+      [sequelize.literal('DATE(scheduled_at)'), 'DESC'],
+      [sequelize.literal('TIME(scheduled_at)'), 'ASC']
     ]
   });
   const formatted = appointments.map(a => {
