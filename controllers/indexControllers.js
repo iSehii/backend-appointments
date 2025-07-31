@@ -12,7 +12,7 @@ exports.getAppointments = async (req, res) => {
   if (!patient) return res.json([]);
   const appointments = await Appointment.findAll({
     where: { patientId: patient.id },
-    include: [Doctor, Patient], order: [['scheduled_at', 'DESC']]
+    include: [Doctor, Patient], order: [['scheduled_at', 'ASC']]
   });
   // Formatear igual que en la creación: incluir doctor como objeto anidado
   const formatted = appointments.map(a => {
@@ -84,7 +84,7 @@ exports.getPatients = async (req, res) => {
   const appointments = await Appointment.findAll({
     where: { doctorId: doctor.id },
     include: [Patient, Doctor],
-    order: [['scheduled_at', 'DESC']]
+    order: [['scheduled_at', 'ASC']]
   });
   // Formatear igual que en getAppointments: incluir patient y doctor como objetos anidados
   const formatted = appointments.map(a => {
@@ -150,3 +150,22 @@ exports.deleteAppointment = async (req, res) => {
   await appointment.destroy();
   res.json({ message: 'Appointment deleted' });
 };
+
+exports.getAppointmentsByPatient = async (req, res) => {
+  const { patient_email } = req.query;
+  if (!patient_email) {
+    return res.status(400).json({ error: 'patient_email is required' });
+  }
+  const patient = await Patient.findOne({ where: { email: patient_email } });
+  if (!patient) return res.json([]);
+  const appointments = await Appointment.findAll({ where: { patientId: patient.id }, include: [Doctor, Patient], order: [['scheduled_at', 'ASC']] });
+  const formatted = appointments.map(a => {
+    const obj = a.toJSON();
+    return {
+      ...obj,
+      patient: obj.Patient,
+      doctor: obj.Doctor
+    };
+  });
+  res.json(formatted);
+}
