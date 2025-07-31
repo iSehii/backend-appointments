@@ -1,6 +1,7 @@
 const Appointment = require('../models/Appointment');
 const Doctor = require('../models/DoctorModel');
 const Patient = require('../models/PacienteModel');
+const sequelize = require('../config/db');
 
 // GET /api/appointments?email=...
 exports.getAppointments = async (req, res) => {
@@ -12,7 +13,11 @@ exports.getAppointments = async (req, res) => {
   if (!patient) return res.json([]);
   const appointments = await Appointment.findAll({
     where: { patientId: patient.id },
-    include: [Doctor, Patient], order: [['scheduled_at', 'ASC']]
+    include: [Doctor, Patient], 
+    order: [
+      [sequelize.fn('DATE', sequelize.col('scheduled_at')), 'DESC'],
+      [sequelize.fn('TIME', sequelize.col('scheduled_at')), 'ASC']
+    ]
   });
   // Formatear igual que en la creación: incluir doctor como objeto anidado
   const formatted = appointments.map(a => {
@@ -84,7 +89,10 @@ exports.getPatients = async (req, res) => {
   const appointments = await Appointment.findAll({
     where: { doctorId: doctor.id },
     include: [Patient, Doctor],
-    order: [['scheduled_at', 'ASC']]
+    order: [
+      [sequelize.fn('DATE', sequelize.col('scheduled_at')), 'DESC'],
+      [sequelize.fn('TIME', sequelize.col('scheduled_at')), 'ASC']
+    ]
   });
   // Formatear igual que en getAppointments: incluir patient y doctor como objetos anidados
   const formatted = appointments.map(a => {
@@ -158,7 +166,14 @@ exports.getAppointmentsByPatient = async (req, res) => {
   }
   const patient = await Patient.findOne({ where: { email: patient_email } });
   if (!patient) return res.json([]);
-  const appointments = await Appointment.findAll({ where: { patientId: patient.id }, include: [Doctor, Patient], order: [['scheduled_at', 'ASC']] });
+  const appointments = await Appointment.findAll({ 
+    where: { patientId: patient.id }, 
+    include: [Doctor, Patient], 
+    order: [
+      [sequelize.fn('DATE', sequelize.col('scheduled_at')), 'DESC'],
+      [sequelize.fn('TIME', sequelize.col('scheduled_at')), 'ASC']
+    ]
+  });
   const formatted = appointments.map(a => {
     const obj = a.toJSON();
     return {
